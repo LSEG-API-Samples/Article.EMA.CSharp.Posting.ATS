@@ -1,0 +1,91 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<EmaConfig>
+
+  <!-- ConsumerGroup provides set of detailed configurations to be used by named consumers				-->
+  <!-- Application specifies which configuration to use by setting OmmConsumerConfig::consumerName()		-->
+  <ConsumerGroup>
+    <!-- DefaultConsumer parameter defines which consumer configuration is used by OmmConsumer			-->
+    <!-- if application does not specify it through OmmConsumerConfig::consumerName()					-->
+    <!-- first consumer on the ConsumerList is a DefaultConsumer if this parameter is not specified		-->
+    <DefaultConsumer value="Consumer_ATS"/>
+    <ConsumerList>
+      <Consumer>
+        <!-- Name is mandatory																		-->
+        <Name value="Consumer_ATS"/>
+        <!-- Channel is optional: defaulted to "RSSL_SOCKET + localhost + 14002"					-->
+        <!-- Channel or ChannelSet may be specified													-->
+        <Channel value="Channel_1"/>
+        <!-- Logger is optional: defaulted to "File + Success"										-->
+        <Logger value="Logger_1"/>
+        <!-- Dictionary is optional: defaulted to "ChannelDictionary"								-->
+        <Dictionary value="Dictionary_ATS"/>
+        <XmlTraceToStdout value="0"/>
+      </Consumer>
+    </ConsumerList>
+  </ConsumerGroup>
+
+
+  <ChannelGroup>
+    <ChannelList>
+      <Channel>
+        <Name value="Channel_1"/>
+        <!-- ChannelType possible values are:														-->
+        <!-- ChannelType::RSSL_SOCKET    - TCP IP connection type									-->
+        <!-- ChannelType::RSSL_ENCRYPTED - Encrypted connection type                                                            -->
+        <ChannelType value="ChannelType::RSSL_SOCKET"/>
+        <!-- CompressionType is optional: defaulted to None											-->
+        <!-- possible values: None, ZLib, LZ4														-->
+        <CompressionType value="CompressionType::None"/>
+        <GuaranteedOutputBuffers value="5000"/>
+        <!-- ConnectionPingTimeout is optional: defaulted to 30000									-->
+        <ConnectionPingTimeout value="30000"/>
+        <!-- TcpNodelay is optional: defaulted to 1 												-->
+        <!-- possible values: 1 (tcp_nodelay option set), 0 (tcp_nodelay not set)					-->
+        <TcpNodelay value="1"/>
+        <Host value="localhost"/>
+        <Port value="14002"/>
+      </Channel>
+    </ChannelList>
+  </ChannelGroup>
+
+
+  <LoggerGroup>
+    <LoggerList>
+      <Logger>
+        <Name value="Logger_1"/>
+
+        <!-- LoggerType is optional:  defaulted to "File"											-->
+        <!-- possible values: Stdout, File															-->
+        <LoggerType value="LoggerType::Stdout"/>
+
+        <!-- LoggerSeverity is optional: defaulted to "Success"										-->
+        <!-- possible values: Verbose, Success, Warning, Error, NoLogMsg							-->
+        <LoggerSeverity value="LoggerSeverity::Success"/>
+      </Logger>
+      <Logger>
+        <Name value="Logger_2"/>
+        <LoggerType value="LoggerType::File"/>
+        <!-- FileName is optional: defaulted to "emaLog_<process id>.log"							-->
+        <FileName value="emaLog"/>
+        <LoggerSeverity value="LoggerSeverity::Success"/>
+      </Logger>
+    </LoggerList>
+  </LoggerGroup>
+
+  <DictionaryGroup>
+
+    <DictionaryList>
+      <Dictionary>
+        <Name value="Dictionary_ATS"/>
+        <DictionaryType value="DictionaryType::FileDictionary"/>
+
+        <!-- dictionary names are optional: defaulted to RDMFieldDictionary and enumtype.def -->
+        <RdmFieldDictionaryFileName value="./RDMFieldDictionary"/>
+        <EnumTypeDefFileName value="./enumtype.def"/>
+      </Dictionary>
+
+    </DictionaryList>
+
+  </DictionaryGroup>
+
+</EmaConfig>

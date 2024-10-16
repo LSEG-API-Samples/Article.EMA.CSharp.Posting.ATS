@@ -8,7 +8,25 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="etc\**" />
+    <EmbeddedResource Remove="etc\**" />
+    <None Remove="etc\**" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="LSEG.Ema.Core" Version="3.3.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="EmaConfig.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="enumtype.def">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="RDMFieldDictionary">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
 
 </Project>
