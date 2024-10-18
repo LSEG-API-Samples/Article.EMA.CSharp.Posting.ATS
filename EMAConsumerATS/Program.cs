@@ -19,6 +19,7 @@ internal class AppClient : IOmmConsumerClient
 
     public long UserId { get; set; }
     public long UserAddress { get; set; }
+    public string ATSAction { get; set; } = "Update";
 
     private static int postId = 1;
     public void OnRefreshMsg(RefreshMsg refreshMsg, IOmmConsumerEvent consumerEvent)
@@ -34,21 +35,21 @@ internal class AppClient : IOmmConsumerClient
                 refreshMsg.State().StreamState == OmmState.StreamStates.OPEN &&
                 refreshMsg.State().DataState == OmmState.DataStates.OK)
         {
-            PostMsg postMsg = new();
-            RefreshMsg nestedRefreshMsg = new RefreshMsg();
-            FieldList nestedFieldList = new FieldList();
-
-            //FieldList is a collection
-            nestedFieldList.AddReal(22, 33, OmmReal.MagnitudeTypes.EXPONENT_POS_1);
-            nestedFieldList.AddReal(25, 34, OmmReal.MagnitudeTypes.EXPONENT_POS_1);
-            nestedFieldList.AddTime(5, 11, 29, 30);
-            //nestedFieldList.AddEnumValue(37, 3);
-            nestedFieldList.Complete();
-            nestedRefreshMsg.Payload(nestedFieldList).Complete(true);
-
-            ((OmmConsumer)consumerEvent!.Closure!).Submit(postMsg.PostId(postId++).ServiceName(PostServiceName)
-                                                        .Name(PostItemName).SolicitAck(true).Complete(true).PublisherId(UserId, UserAddress)
-                                                        .Payload(nestedRefreshMsg), consumerEvent.Handle);
+            switch (ATSAction)
+            {
+                case "Create":
+                    CreateRIC(consumerEvent);
+                    break;
+                case "Update":
+                    UpdateRIC(consumerEvent); 
+                    break;
+                case "ADD_Fields":
+                    AddFields(consumerEvent); 
+                    break;
+                default:
+                    Console.WriteLine("Wrong command");
+                    break;
+            }
         }
 
         Decode(refreshMsg);
@@ -86,9 +87,12 @@ internal class AppClient : IOmmConsumerClient
         Console.WriteLine("Received AckMsg. Item Handle: " + consumerEvent.Handle + " Closure: " + (consumerEvent.Closure ?? "null"));
 
         Decode(ackMsg);
+        Console.WriteLine($"NackCode: {(ackMsg.HasNackCode ? ackMsg.NackCode() : "<not set>")}");
+        Console.WriteLine($"Text: {(ackMsg.HasText ? ackMsg.Text() : "<not set>")}");
 
         Console.WriteLine();
     }
+
 
     private void Decode(Msg msg)
     {
@@ -228,6 +232,62 @@ internal class AppClient : IOmmConsumerClient
                 }
         }
     }
+
+    private void CreateRIC(IOmmConsumerEvent consumerEvent) 
+    {
+        Console.WriteLine("Create New RIC");
+        PostMsg postMsg = new();
+        RefreshMsg nestedRefreshMsg = new RefreshMsg();
+        FieldList nestedFieldList = new FieldList();
+
+        //FieldList is a collection
+        nestedFieldList.AddAscii(-1, "WASIN.W");
+        nestedFieldList.AddReal(22, 12, OmmReal.MagnitudeTypes.EXPONENT_POS_1);
+        nestedFieldList.AddReal(25, 13, OmmReal.MagnitudeTypes.EXPONENT_POS_1);
+        nestedFieldList.AddTime(5, 11, 29, 30);
+        nestedFieldList.Complete();
+        nestedRefreshMsg.Payload(nestedFieldList).Complete(true);
+
+        ((OmmConsumer)consumerEvent!.Closure!).Submit(postMsg.PostId(postId++).ServiceName(PostServiceName)
+                                                    .Name("ATS_INSERT_S").SolicitAck(true).Complete(true).PublisherId(UserId, UserAddress)
+                                                    .Payload(nestedRefreshMsg), consumerEvent.Handle);
+    }
+
+    private void UpdateRIC(IOmmConsumerEvent consumerEvent)
+    {
+        Console.WriteLine("Update RIC");
+        PostMsg postMsg = new();
+        RefreshMsg nestedRefreshMsg = new RefreshMsg();
+        FieldList nestedFieldList = new FieldList();
+
+        //FieldList is a collection
+        nestedFieldList.AddReal(22, 43, OmmReal.MagnitudeTypes.EXPONENT_POS_1);
+        nestedFieldList.AddReal(25, 44, OmmReal.MagnitudeTypes.EXPONENT_POS_1);
+        nestedFieldList.AddTime(5, 11, 29, 30);
+        nestedFieldList.Complete();
+        nestedRefreshMsg.Payload(nestedFieldList).Complete(true);
+        ((OmmConsumer)consumerEvent!.Closure!).Submit(postMsg.PostId(postId++).ServiceName(PostServiceName)
+                                                    .Name(PostItemName).SolicitAck(true).Complete(true).PublisherId(UserId, UserAddress)
+                                                    .Payload(nestedRefreshMsg), consumerEvent.Handle);
+    }
+
+    private void AddFields(IOmmConsumerEvent consumerEvent)
+    {
+        Console.WriteLine("Add Fields");
+        PostMsg postMsg = new();
+        RefreshMsg nestedRefreshMsg = new RefreshMsg();
+        FieldList nestedFieldList = new FieldList();
+
+        //FieldList is a collection
+        nestedFieldList.AddAscii(-1, PostItemName);
+        nestedFieldList.AddReal(12, 22, OmmReal.MagnitudeTypes.EXPONENT_POS_1);
+        nestedFieldList.AddReal(13, 3, OmmReal.MagnitudeTypes.EXPONENT_POS_1);
+        nestedFieldList.Complete();
+        nestedRefreshMsg.Payload(nestedFieldList).Complete(true);
+        ((OmmConsumer)consumerEvent!.Closure!).Submit(postMsg.PostId(postId++).ServiceName(PostServiceName)
+                                                    .Name("ATS_ADDFIELD_S").SolicitAck(true).Complete(true).PublisherId(UserId, UserAddress)
+                                                    .Payload(nestedRefreshMsg), consumerEvent.Handle);
+    }
 }
 
 class Program
@@ -242,10 +302,10 @@ class Program
         try
         {
             // Get IP Address as string
-            string ipAddress = Dns.GetHostEntry(Dns.GetHostName()).AddressList.First(x => x.AddressFamily == System.Net.Sockets.AddressFamily.InterNetwork).ToString();
+            string ipAddress = Dns.GetHostEntry(Dns.GetHostName()).AddressList.First(x => x.AddressFamily == AddressFamily.InterNetwork).ToString();
             
             // Get HostName
-            string hostName = System.Net.Dns.GetHostName();
+            string hostName = Dns.GetHostName();
 
             AppClient appClient = new();
 
@@ -253,7 +313,8 @@ class Program
             appClient.PostItemName = PostItem;
             appClient.UserId = DACSUserID;
             // Get IP Address as Long
-            appClient.UserAddress = BitConverter.ToInt32(IPAddress.Parse(ipAddress).GetAddressBytes(), 0); ;
+            appClient.UserAddress = BitConverter.ToInt32(IPAddress.Parse(ipAddress).GetAddressBytes(), 0);
+            appClient.ATSAction = "ADD_Fields";
 
             OmmConsumerConfig config = new OmmConsumerConfig().ConsumerName("Consumer_ATS").UserName(DACSUserName).Position($"{ipAddress}/{hostName}");
             consumer = new OmmConsumer(config);

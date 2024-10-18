@@ -19,7 +19,7 @@
         <Logger value="Logger_1"/>
         <!-- Dictionary is optional: defaulted to "ChannelDictionary"								-->
         <Dictionary value="Dictionary_ATS"/>
-        <XmlTraceToStdout value="0"/>
+        <XmlTraceToStdout value="1"/>
         <RequestTimeout value="45000"/>
       </Consumer>
     </ConsumerList>
@@ -43,7 +43,7 @@
         <!-- TcpNodelay is optional: defaulted to 1 												-->
         <!-- possible values: 1 (tcp_nodelay option set), 0 (tcp_nodelay not set)					-->
         <TcpNodelay value="1"/>
-        <Host value="ADS_Server"/>
+        <Host value="ADS_SERVER"/>
         <Port value="14002"/>
       </Channel>
     </ChannelList>
