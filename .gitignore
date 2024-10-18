@@ -4,6 +4,7 @@
 .vs/
 bin/
 obj/
+EMAConsumerATS/EmaConfig_work.xml
 
 
 ### VS Code ###
