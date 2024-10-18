@@ -6,9 +6,20 @@ using System.Threading;
 using System;
 using static LSEG.Ema.Access.DataType;
 using LSEG.Ema.Rdm;
+using System.Net;
+using System.Net.Sockets;
+using System.Net.NetworkInformation;
+using System.Linq;
+using System.Security.Authentication.ExtendedProtection;
 
 internal class AppClient : IOmmConsumerClient
 {
+    public string? PostServiceName { get; set; }
+    public string? PostItemName { get; set; }   
+
+    public long UserId { get; set; }
+    public long UserAddress { get; set; }
+
     private static int postId = 1;
     public void OnRefreshMsg(RefreshMsg refreshMsg, IOmmConsumerEvent consumerEvent)
     {
@@ -28,19 +39,19 @@ internal class AppClient : IOmmConsumerClient
             FieldList nestedFieldList = new FieldList();
 
             //FieldList is a collection
-            nestedFieldList.AddReal(22, 34, OmmReal.MagnitudeTypes.EXPONENT_POS_1);
-            nestedFieldList.AddReal(25, 35, OmmReal.MagnitudeTypes.EXPONENT_POS_1);
-            nestedFieldList.AddTime(18, 11, 29, 30);
-            nestedFieldList.AddEnumValue(37, 3);
+            nestedFieldList.AddReal(22, 33, OmmReal.MagnitudeTypes.EXPONENT_POS_1);
+            nestedFieldList.AddReal(25, 34, OmmReal.MagnitudeTypes.EXPONENT_POS_1);
+            nestedFieldList.AddTime(5, 11, 29, 30);
+            //nestedFieldList.AddEnumValue(37, 3);
             nestedFieldList.Complete();
             nestedRefreshMsg.Payload(nestedFieldList).Complete(true);
 
-            ((OmmConsumer)consumerEvent!.Closure!).Submit(postMsg.PostId(postId++).ServiceName("DIST_CACHE")
-                                                        .Name("TRI.N").SolicitAck(true).Complete(true)
+            ((OmmConsumer)consumerEvent!.Closure!).Submit(postMsg.PostId(postId++).ServiceName(PostServiceName)
+                                                        .Name(PostItemName).SolicitAck(true).Complete(true).PublisherId(UserId, UserAddress)
                                                         .Payload(nestedRefreshMsg), consumerEvent.Handle);
         }
 
-        //Decode(refreshMsg);
+        Decode(refreshMsg);
 
         Console.WriteLine();
     }
@@ -52,7 +63,7 @@ internal class AppClient : IOmmConsumerClient
         Console.WriteLine($"Item Name: {(updateMsg.HasName ? updateMsg.Name() : "<not set>")}");
         Console.WriteLine($"Service Name: {(updateMsg.HasServiceName ? updateMsg.ServiceName() : "<not set>")}");
 
-        //Decode(updateMsg);
+        Decode(updateMsg);
 
         Console.WriteLine();
     }
@@ -221,13 +232,30 @@ internal class AppClient : IOmmConsumerClient
 
 class Program
 {
+    static String ServiceName = "ATS1_7";
+    static String PostItem = "PIM.W";
+    static readonly String DACSUserName = "wasin";
+    static long DACSUserID = 18;
     static void Main()
     {
         OmmConsumer? consumer = null;
         try
         {
+            // Get IP Address as string
+            string ipAddress = Dns.GetHostEntry(Dns.GetHostName()).AddressList.First(x => x.AddressFamily == System.Net.Sockets.AddressFamily.InterNetwork).ToString();
+            
+            // Get HostName
+            string hostName = System.Net.Dns.GetHostName();
+
             AppClient appClient = new();
-            OmmConsumerConfig config = new OmmConsumerConfig().ConsumerName("Consumer_ATS").UserName("user");
+
+            appClient.PostServiceName =ServiceName;
+            appClient.PostItemName = PostItem;
+            appClient.UserId = DACSUserID;
+            // Get IP Address as Long
+            appClient.UserAddress = BitConverter.ToInt32(IPAddress.Parse(ipAddress).GetAddressBytes(), 0); ;
+
+            OmmConsumerConfig config = new OmmConsumerConfig().ConsumerName("Consumer_ATS").UserName(DACSUserName).Position($"{ipAddress}/{hostName}");
             consumer = new OmmConsumer(config);
 
             RequestMsg requestMsg = new();
@@ -235,7 +263,7 @@ class Program
             Console.WriteLine("Consumer: Sending Login Domain Request message");
             consumer.RegisterClient(requestMsg.DomainType(EmaRdm.MMT_LOGIN), appClient, consumer);
             Console.WriteLine("Consumer: Sending Item Request message");
-            consumer.RegisterClient(new RequestMsg().ServiceName("DIST_CACHE").Name("IBM.N"), appClient,consumer);
+            consumer.RegisterClient(new RequestMsg().ServiceName(ServiceName).Name(PostItem), appClient,consumer);
             Thread.Sleep(60000); // API calls OnRefreshMsg(), OnUpdateMsg() and OnStatusMsg()
         }
         catch (OmmException excp)
