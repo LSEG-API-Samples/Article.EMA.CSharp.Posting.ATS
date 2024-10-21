@@ -43,6 +43,7 @@
         <!-- TcpNodelay is optional: defaulted to 1 												-->
         <!-- possible values: 1 (tcp_nodelay option set), 0 (tcp_nodelay not set)					-->
         <TcpNodelay value="1"/>
+        <!--<Host value="10.42.58.18"/>-->
         <Host value="ADS_SERVER"/>
         <Port value="14002"/>
       </Channel>

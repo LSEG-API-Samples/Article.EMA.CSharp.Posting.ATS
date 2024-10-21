@@ -14,8 +14,8 @@ using System.Security.Authentication.ExtendedProtection;
 
 internal class AppClient : IOmmConsumerClient
 {
-    public string? PostServiceName { get; set; }
-    public string? PostItemName { get; set; }   
+    public string PostServiceName { get; set; } = "ATS";
+    public string PostItemName { get; set; } = "ATS_RIC";
 
     public long UserId { get; set; }
     public long UserAddress { get; set; }
@@ -241,16 +241,18 @@ internal class AppClient : IOmmConsumerClient
         FieldList nestedFieldList = new FieldList();
 
         //FieldList is a collection
-        nestedFieldList.AddAscii(-1, "WASIN.W");
+        nestedFieldList.AddAscii(-1, PostItemName);
         nestedFieldList.AddReal(22, 12, OmmReal.MagnitudeTypes.EXPONENT_POS_1);
         nestedFieldList.AddReal(25, 13, OmmReal.MagnitudeTypes.EXPONENT_POS_1);
-        nestedFieldList.AddTime(5, 11, 29, 30);
+        //nestedFieldList.AddTime(5, 11, 29, 30);
         nestedFieldList.Complete();
         nestedRefreshMsg.Payload(nestedFieldList).Complete(true);
 
+        
         ((OmmConsumer)consumerEvent!.Closure!).Submit(postMsg.PostId(postId++).ServiceName(PostServiceName)
                                                     .Name("ATS_INSERT_S").SolicitAck(true).Complete(true).PublisherId(UserId, UserAddress)
                                                     .Payload(nestedRefreshMsg), consumerEvent.Handle);
+        
     }
 
     private void UpdateRIC(IOmmConsumerEvent consumerEvent)
@@ -292,9 +294,10 @@ internal class AppClient : IOmmConsumerClient
 
 class Program
 {
-    static String ServiceName = "ATS1_7";
-    static String PostItem = "PIM.W";
-    static readonly String DACSUserName = "wasin";
+    static string ServiceName = "ATS1_7";
+    static string SubItem = "PIM.W";
+    static string PostItem = "WASIN.W";
+    static readonly string DACSUserName = "wasin";
     static long DACSUserID = 18;
     static void Main()
     {
@@ -314,7 +317,7 @@ class Program
             appClient.UserId = DACSUserID;
             // Get IP Address as Long
             appClient.UserAddress = BitConverter.ToInt32(IPAddress.Parse(ipAddress).GetAddressBytes(), 0);
-            appClient.ATSAction = "ADD_Fields";
+            appClient.ATSAction = "Update";
 
             OmmConsumerConfig config = new OmmConsumerConfig().ConsumerName("Consumer_ATS").UserName(DACSUserName).Position($"{ipAddress}/{hostName}");
             consumer = new OmmConsumer(config);
@@ -324,7 +327,7 @@ class Program
             Console.WriteLine("Consumer: Sending Login Domain Request message");
             consumer.RegisterClient(requestMsg.DomainType(EmaRdm.MMT_LOGIN), appClient, consumer);
             Console.WriteLine("Consumer: Sending Item Request message");
-            consumer.RegisterClient(new RequestMsg().ServiceName(ServiceName).Name(PostItem), appClient,consumer);
+            consumer.RegisterClient(new RequestMsg().ServiceName(ServiceName).Name(SubItem), appClient,consumer);
             Thread.Sleep(60000); // API calls OnRefreshMsg(), OnUpdateMsg() and OnStatusMsg()
         }
         catch (OmmException excp)
