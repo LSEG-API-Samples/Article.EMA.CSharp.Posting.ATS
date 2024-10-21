@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "EMAConsumerATS": {
+      "commandName": "Project",
+      "commandLineArgs": "-action delete -service ATS1_7 -user WASIN"
+    }
+  }
+}
