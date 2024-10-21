@@ -46,6 +46,9 @@ internal class AppClient : IOmmConsumerClient
                 case "ADD_Fields":
                     AddFields(consumerEvent); 
                     break;
+                case "Delete_Fields":
+                    DeleteFields(consumerEvent);
+                    break;
                 default:
                     Console.WriteLine("Wrong command");
                     break;
@@ -244,7 +247,7 @@ internal class AppClient : IOmmConsumerClient
         nestedFieldList.AddAscii(-1, PostItemName);
         nestedFieldList.AddReal(22, 12, OmmReal.MagnitudeTypes.EXPONENT_POS_1);
         nestedFieldList.AddReal(25, 13, OmmReal.MagnitudeTypes.EXPONENT_POS_1);
-        //nestedFieldList.AddTime(5, 11, 29, 30);
+        nestedFieldList.AddTime(5, 11, 29, 30);
         nestedFieldList.Complete();
         nestedRefreshMsg.Payload(nestedFieldList).Complete(true);
 
@@ -265,7 +268,7 @@ internal class AppClient : IOmmConsumerClient
         //FieldList is a collection
         nestedFieldList.AddReal(22, 43, OmmReal.MagnitudeTypes.EXPONENT_POS_1);
         nestedFieldList.AddReal(25, 44, OmmReal.MagnitudeTypes.EXPONENT_POS_1);
-        nestedFieldList.AddTime(5, 11, 29, 30);
+        nestedFieldList.AddTime(5, 11, 30, 30);
         nestedFieldList.Complete();
         nestedRefreshMsg.Payload(nestedFieldList).Complete(true);
         ((OmmConsumer)consumerEvent!.Closure!).Submit(postMsg.PostId(postId++).ServiceName(PostServiceName)
@@ -288,6 +291,24 @@ internal class AppClient : IOmmConsumerClient
         nestedRefreshMsg.Payload(nestedFieldList).Complete(true);
         ((OmmConsumer)consumerEvent!.Closure!).Submit(postMsg.PostId(postId++).ServiceName(PostServiceName)
                                                     .Name("ATS_ADDFIELD_S").SolicitAck(true).Complete(true).PublisherId(UserId, UserAddress)
+                                                    .Payload(nestedRefreshMsg), consumerEvent.Handle);
+    }
+
+    private void DeleteFields(IOmmConsumerEvent consumerEvent)
+    {
+        Console.WriteLine("Delete Fields");
+        PostMsg postMsg = new();
+        RefreshMsg nestedRefreshMsg = new RefreshMsg();
+        FieldList nestedFieldList = new FieldList();
+
+        //FieldList is a collection
+        nestedFieldList.AddAscii(-1, PostItemName);
+        nestedFieldList.AddReal(12, 1, OmmReal.MagnitudeTypes.EXPONENT_POS_1);
+        nestedFieldList.AddReal(13, 2, OmmReal.MagnitudeTypes.EXPONENT_POS_1);
+        nestedFieldList.Complete();
+        nestedRefreshMsg.Payload(nestedFieldList).Complete(true);
+        ((OmmConsumer)consumerEvent!.Closure!).Submit(postMsg.PostId(postId++).ServiceName(PostServiceName)
+                                                    .Name("ATS_DELETE").SolicitAck(true).Complete(true).PublisherId(UserId, UserAddress)
                                                     .Payload(nestedRefreshMsg), consumerEvent.Handle);
     }
 }
@@ -317,7 +338,7 @@ class Program
             appClient.UserId = DACSUserID;
             // Get IP Address as Long
             appClient.UserAddress = BitConverter.ToInt32(IPAddress.Parse(ipAddress).GetAddressBytes(), 0);
-            appClient.ATSAction = "Update";
+            appClient.ATSAction = "Delete_Fields";
 
             OmmConsumerConfig config = new OmmConsumerConfig().ConsumerName("Consumer_ATS").UserName(DACSUserName).Position($"{ipAddress}/{hostName}");
             consumer = new OmmConsumer(config);
