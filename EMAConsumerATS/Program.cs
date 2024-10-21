@@ -49,6 +49,9 @@ internal class AppClient : IOmmConsumerClient
                 case "Delete_Fields":
                     DeleteFields(consumerEvent);
                     break;
+                case "Delete":
+                    DeleteRIC(consumerEvent);
+                    break;
                 default:
                     Console.WriteLine("Wrong command");
                     break;
@@ -87,9 +90,10 @@ internal class AppClient : IOmmConsumerClient
 
     public void OnAckMsg(AckMsg ackMsg, IOmmConsumerEvent consumerEvent)
     {
-        Console.WriteLine("Received AckMsg. Item Handle: " + consumerEvent.Handle + " Closure: " + (consumerEvent.Closure ?? "null"));
+        Console.WriteLine($"Received AckMsg. Item Handle: {consumerEvent.Handle} Closure: {(consumerEvent.Closure ?? "null")}");
 
-        Decode(ackMsg);
+        //Decode(ackMsg);
+        Console.WriteLine($"AckId: {ackMsg.AckId()}");
         Console.WriteLine($"NackCode: {(ackMsg.HasNackCode ? ackMsg.NackCode() : "<not set>")}");
         Console.WriteLine($"Text: {(ackMsg.HasText ? ackMsg.Text() : "<not set>")}");
 
@@ -144,11 +148,11 @@ internal class AppClient : IOmmConsumerClient
                         break;
 
                     case DataTypes.DATE:
-                        Console.WriteLine("${elementEntry.OmmDateValue().Day}/{elementEntry.OmmDateValue().Month}/{elementEntry.OmmDateValue().Year}");
+                        Console.WriteLine($"{elementEntry.OmmDateValue().Day}/{elementEntry.OmmDateValue().Month}/{elementEntry.OmmDateValue().Year}");
                         break;
 
                     case DataTypes.TIME:
-                        Console.WriteLine("${elementEntry.OmmTimeValue().Hour}:{elementEntry.OmmTimeValue().Minute}:{elementEntry.OmmTimeValue().Second}:{elementEntry.OmmTimeValue().Millisecond}");
+                        Console.WriteLine($"{elementEntry.OmmTimeValue().Hour}:{elementEntry.OmmTimeValue().Minute}:{elementEntry.OmmTimeValue().Second}:{elementEntry.OmmTimeValue().Millisecond}");
                         break;
 
                     case DataTypes.INT:
@@ -189,7 +193,10 @@ internal class AppClient : IOmmConsumerClient
             Console.Write($"Fid: {fieldEntry.FieldId} Name = {fieldEntry.Name} DataType: {DataType.AsString(fieldEntry.Load!.DataType)} Value: ");
 
             if (Data.DataCode.BLANK == fieldEntry.Code)
+            {
+
                 Console.WriteLine(" blank");
+            }
             else
                 switch (fieldEntry.LoadType)
                 {
@@ -198,11 +205,11 @@ internal class AppClient : IOmmConsumerClient
                         break;
 
                     case DataTypes.DATE:
-                        Console.WriteLine(fieldEntry.OmmDateValue().Day + " / " + fieldEntry.OmmDateValue().Month + " / " + fieldEntry.OmmDateValue().Year);
+                        Console.WriteLine($"{fieldEntry.OmmDateValue().Day} / {fieldEntry.OmmDateValue().Month} / {fieldEntry.OmmDateValue().Year}");
                         break;
 
                     case DataTypes.TIME:
-                        Console.WriteLine(fieldEntry.OmmTimeValue().Hour + ":" + fieldEntry.OmmTimeValue().Minute + ":" + fieldEntry.OmmTimeValue().Second + ":" + fieldEntry.OmmTimeValue().Millisecond);
+                        Console.WriteLine($"{fieldEntry.OmmTimeValue().Hour}:{fieldEntry.OmmTimeValue().Minute}:{fieldEntry.OmmTimeValue().Second}:{fieldEntry.OmmTimeValue().Millisecond}");
                         break;
 
                     case DataTypes.INT:
@@ -226,7 +233,7 @@ internal class AppClient : IOmmConsumerClient
                         break;
 
                     case DataTypes.ERROR:
-                        Console.WriteLine(fieldEntry.OmmErrorValue().ErrorCode + " (" + fieldEntry.OmmErrorValue().ErrorCodeAsString() + ")");
+                        Console.WriteLine($"{fieldEntry.OmmErrorValue().ErrorCode}({fieldEntry.OmmErrorValue().ErrorCodeAsString()})");
                         break;
 
                     default:
@@ -238,7 +245,7 @@ internal class AppClient : IOmmConsumerClient
 
     private void CreateRIC(IOmmConsumerEvent consumerEvent) 
     {
-        Console.WriteLine("Create New RIC");
+        Console.WriteLine("Create ATS New RIC");
         PostMsg postMsg = new();
         RefreshMsg nestedRefreshMsg = new RefreshMsg();
         FieldList nestedFieldList = new FieldList();
@@ -260,9 +267,9 @@ internal class AppClient : IOmmConsumerClient
 
     private void UpdateRIC(IOmmConsumerEvent consumerEvent)
     {
-        Console.WriteLine("Update RIC");
+        Console.WriteLine("Update ATS RIC");
         PostMsg postMsg = new();
-        RefreshMsg nestedRefreshMsg = new RefreshMsg();
+        UpdateMsg nestedUpdateMsg = new UpdateMsg();
         FieldList nestedFieldList = new FieldList();
 
         //FieldList is a collection
@@ -270,17 +277,17 @@ internal class AppClient : IOmmConsumerClient
         nestedFieldList.AddReal(25, 44, OmmReal.MagnitudeTypes.EXPONENT_POS_1);
         nestedFieldList.AddTime(5, 11, 30, 30);
         nestedFieldList.Complete();
-        nestedRefreshMsg.Payload(nestedFieldList).Complete(true);
+        nestedUpdateMsg.Payload(nestedFieldList);
         ((OmmConsumer)consumerEvent!.Closure!).Submit(postMsg.PostId(postId++).ServiceName(PostServiceName)
                                                     .Name(PostItemName).SolicitAck(true).Complete(true).PublisherId(UserId, UserAddress)
-                                                    .Payload(nestedRefreshMsg), consumerEvent.Handle);
+                                                    .Payload(nestedUpdateMsg), consumerEvent.Handle);
     }
 
     private void AddFields(IOmmConsumerEvent consumerEvent)
     {
-        Console.WriteLine("Add Fields");
+        Console.WriteLine("Add ATS Fields");
         PostMsg postMsg = new();
-        RefreshMsg nestedRefreshMsg = new RefreshMsg();
+        UpdateMsg nestedUpdateMsg = new UpdateMsg();
         FieldList nestedFieldList = new FieldList();
 
         //FieldList is a collection
@@ -288,17 +295,17 @@ internal class AppClient : IOmmConsumerClient
         nestedFieldList.AddReal(12, 22, OmmReal.MagnitudeTypes.EXPONENT_POS_1);
         nestedFieldList.AddReal(13, 3, OmmReal.MagnitudeTypes.EXPONENT_POS_1);
         nestedFieldList.Complete();
-        nestedRefreshMsg.Payload(nestedFieldList).Complete(true);
+        nestedUpdateMsg.Payload(nestedFieldList);
         ((OmmConsumer)consumerEvent!.Closure!).Submit(postMsg.PostId(postId++).ServiceName(PostServiceName)
                                                     .Name("ATS_ADDFIELD_S").SolicitAck(true).Complete(true).PublisherId(UserId, UserAddress)
-                                                    .Payload(nestedRefreshMsg), consumerEvent.Handle);
+                                                    .Payload(nestedUpdateMsg), consumerEvent.Handle);
     }
 
     private void DeleteFields(IOmmConsumerEvent consumerEvent)
     {
-        Console.WriteLine("Delete Fields");
+        Console.WriteLine("Delete ATS Fields");
         PostMsg postMsg = new();
-        RefreshMsg nestedRefreshMsg = new RefreshMsg();
+        UpdateMsg nestedUpdateMsg = new UpdateMsg();
         FieldList nestedFieldList = new FieldList();
 
         //FieldList is a collection
@@ -306,10 +313,26 @@ internal class AppClient : IOmmConsumerClient
         nestedFieldList.AddReal(12, 1, OmmReal.MagnitudeTypes.EXPONENT_POS_1);
         nestedFieldList.AddReal(13, 2, OmmReal.MagnitudeTypes.EXPONENT_POS_1);
         nestedFieldList.Complete();
-        nestedRefreshMsg.Payload(nestedFieldList).Complete(true);
+        nestedUpdateMsg.Payload(nestedFieldList);
         ((OmmConsumer)consumerEvent!.Closure!).Submit(postMsg.PostId(postId++).ServiceName(PostServiceName)
                                                     .Name("ATS_DELETE").SolicitAck(true).Complete(true).PublisherId(UserId, UserAddress)
-                                                    .Payload(nestedRefreshMsg), consumerEvent.Handle);
+                                                    .Payload(nestedUpdateMsg), consumerEvent.Handle);
+    }
+
+    private void DeleteRIC(IOmmConsumerEvent consumerEvent)
+    {
+        Console.WriteLine("Delete ATS RIC");
+        PostMsg postMsg = new();
+        UpdateMsg nestedUpdateMsg = new UpdateMsg();
+        FieldList nestedFieldList = new FieldList();
+
+        //FieldList is a collection
+        nestedFieldList.AddAscii(-1, PostItemName);
+        nestedFieldList.Complete();
+        nestedUpdateMsg.Payload(nestedFieldList);
+        ((OmmConsumer)consumerEvent!.Closure!).Submit(postMsg.PostId(postId++).ServiceName(PostServiceName)
+                                                    .Name("ATS_DELETE_ALL").SolicitAck(true).Complete(true).PublisherId(UserId, UserAddress)
+                                                    .Payload(nestedUpdateMsg), consumerEvent.Handle);
     }
 }
 
@@ -317,7 +340,7 @@ class Program
 {
     static string ServiceName = "ATS1_7";
     static string SubItem = "PIM.W";
-    static string PostItem = "WASIN.W";
+    static string PostItem = "NEW.RIC";
     static readonly string DACSUserName = "wasin";
     static long DACSUserID = 18;
     static void Main()
@@ -338,7 +361,7 @@ class Program
             appClient.UserId = DACSUserID;
             // Get IP Address as Long
             appClient.UserAddress = BitConverter.ToInt32(IPAddress.Parse(ipAddress).GetAddressBytes(), 0);
-            appClient.ATSAction = "Delete_Fields";
+            appClient.ATSAction = "Delete";
 
             OmmConsumerConfig config = new OmmConsumerConfig().ConsumerName("Consumer_ATS").UserName(DACSUserName).Position($"{ipAddress}/{hostName}");
             consumer = new OmmConsumer(config);

@@ -19,7 +19,7 @@
         <Logger value="Logger_1"/>
         <!-- Dictionary is optional: defaulted to "ChannelDictionary"								-->
         <Dictionary value="Dictionary_ATS"/>
-        <XmlTraceToStdout value="1"/>
+        <XmlTraceToStdout value="0"/>
         <RequestTimeout value="45000"/>
       </Consumer>
     </ConsumerList>
