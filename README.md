@@ -54,4 +54,88 @@ Please contact your LSEG representative to help you with the RTDS and ATS config
 
 ## How to Run
 
-[tbd]
+The first step is to unzip or download the example project folder into a directory of your choice, then follow the steps below.
+
+**Note**: Please contact your Market Data Support team to help you with the RTDS and ATS servers configurations and setting.
+
+1. Add the ATS fields definition on the *Prerequisite* section above to the RTDS's RDMFieldDictionary file (both ADS and ADH).
+2. Restart the ADS and ADH server.
+3. Enable the ATS server to accept contribution.
+4. Open the &lt;EMAConsumerATS&gt;EmaConfig.xml file with any text editor, and then set the ADS server hostname and port on the file to match your environment.
+
+    ```xml
+    <Channel>
+        <Name value="Channel_1"/>
+        ...
+        <Host value="ADS_SERVER"/>
+        <Port value="14002"/>
+    </Channel>
+    ```
+5. Open the project *EMAConsumerATS* folder in a command prompt application, then run the following command to build the project
+
+    ```bash
+    dotnet build
+    ```
+6. Once the build succeeded, run the following command to run the  project
+
+    ```bash
+    dotnet run -action {create, addfields, removefields, delete, update} -service {ATS Service name} -user {DACS Username } -item {RIC name to interact with ATS}
+    ```
+
+    example:
+
+    ```bash
+    dotnet run -action create -service ATS1_7 -user wasin -item NEWITEM.RIC
+    ```
+    
+### Example Result:
+
+```bash
+dotnet run -action update -service ATS1_7
+
+INFO|: loggerMsg
+    ClientName: ChannelCallbackClient
+    Severity: Info    Text:    Received ChannelUp event on channel Channel_1
+        Instance Name Consumer_ATS_1
+        Component Version ads3.7.3.L1.linux.rrg 64-bit
+loggerMsgEnd
+Consumer: Sending Login Domain Request message
+Received Refresh. Item Handle: 1 Closure: LSEG.Ema.Access.OmmConsumer
+Item Name: USER
+Service Name: <not set>
+Item State: Open / Ok / None / 'Login accepted by host 8a7869ff3e7a.'
+Update ATS RIC
+ Name = AllowSuspectData DataType: UInt Value: 1
+ Name = ApplicationId DataType: Ascii Value: 256
+ Name = ApplicationName DataType: Ascii Value: ADS
+ Name = Position DataType: Ascii Value: 192.168.68.108/WIN-V793K3HCLOL
+ Name = ProvidePermissionExpressions DataType: UInt Value: 1
+ Name = ProvidePermissionProfile DataType: UInt Value: 0
+ Name = SingleOpen DataType: UInt Value: 1
+ Name = SupportEnhancedSymbolList DataType: UInt Value: 1
+ Name = SupportOMMPost DataType: UInt Value: 1
+ Name = SupportPauseResume DataType: UInt Value: 0
+ Name = SupportStandby DataType: UInt Value: 1
+ Name = SupportStandbyMode DataType: UInt Value: 3
+ Name = SupportBatchRequests DataType: UInt Value: 7
+ Name = SupportViewRequests DataType: UInt Value: 1
+ Name = SupportOptimizedPauseResume DataType: UInt Value: 0
+
+Received AckMsg. Item Handle: 1 Closure: LSEG.Ema.Access.OmmConsumer
+AckId: 1
+NackCode: <not set>
+Text: [1]: Contribution Accepted
+```
+
+## <a id="references"></a>References
+
+For further details, please check out the following resources:
+- [Real-Time SDK C#](https://developers.lseg.com/en/api-catalog/refinitiv-real-time-opnsrc/refinitiv-real-time-csharp-sdk) page on the [LSEG Developer Community](https://developers.lseg.com/) website.
+- [Real-Time SDK Family](https://developers.lseg.com/en/use-cases-catalog/refinitiv-real-time) page.
+- [Real-Time SDK C# Quick Start](https://developers.lseg.com/en/api-catalog/refinitiv-real-time-opnsrc/refinitiv-real-time-csharp-sdk/quick-start).
+- [Developer Article: 10 important things you need to know before you write an Enterprise Real Time application](https://developers.lseg.com/article/10-important-things-you-need-know-you-write-elektron-real-time-application).
+- [Developer Webinar: Introduction to Enterprise App Creation With Open-Source Enterprise Message API](https://www.youtube.com/watch?v=2pyhYmgHxlU).
+- [Implementing Real-Time API applications to work with ATS Part1](https://developers.lseg.com/en/article-catalog/article/implementing-elektron-api-applications-work-ats-part-1).
+- [Implementing Real-Time API applications to work with ATS Part2](https://developers.lseg.com/en/article-catalog/article/implementing-elektron-api-applications-work-ats-part-2).
+
+For any question related to this article or the RTSDK page, please use the Developer Community [Q&A Forum](https://community.developers.refinitiv.com/).
