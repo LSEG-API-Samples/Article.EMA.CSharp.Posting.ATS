@@ -65,7 +65,7 @@ The first step is to unzip or download the example project folder into a directo
 
     ```xml
     <Channel>
-        <Name value="Channel_1"/>
+        <Name value="Channel_ATS"/>
         ...
         <Host value="ADS_SERVER"/>
         <Port value="14002"/>

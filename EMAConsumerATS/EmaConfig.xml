@@ -14,7 +14,7 @@
         <Name value="Consumer_ATS"/>
         <!-- Channel is optional: defaulted to "RSSL_SOCKET + localhost + 14002"					-->
         <!-- Channel or ChannelSet may be specified													-->
-        <Channel value="Channel_1"/>
+        <Channel value="Channel_ATS"/>
         <!-- Logger is optional: defaulted to "File + Success"										-->
         <Logger value="Logger_1"/>
         <!-- Dictionary is optional: defaulted to "ChannelDictionary"								-->
@@ -29,7 +29,7 @@
   <ChannelGroup>
     <ChannelList>
       <Channel>
-        <Name value="Channel_1"/>
+        <Name value="Channel_ATS"/>
         <!-- ChannelType possible values are:														-->
         <!-- ChannelType::RSSL_SOCKET    - TCP IP connection type									-->
         <!-- ChannelType::RSSL_ENCRYPTED - Encrypted connection type                                                            -->
@@ -78,11 +78,10 @@
     <DictionaryList>
       <Dictionary>
         <Name value="Dictionary_ATS"/>
-        <DictionaryType value="DictionaryType::FileDictionary"/>
-
-        <!-- dictionary names are optional: defaulted to RDMFieldDictionary and enumtype.def -->
-        <RdmFieldDictionaryFileName value="./RDMFieldDictionary"/>
-        <EnumTypeDefFileName value="./enumtype.def"/>
+        <!-- dictionaryType is optional: defaulted to ChannelDictionary" -->
+        <!-- possible values: ChannelDictionary, FileDictionary -->
+        <!-- if dictionaryType is set to ChannelDictionary, file names are ignored -->
+        <DictionaryType value="DictionaryType::ChannelDictionary"/>
       </Dictionary>
 
     </DictionaryList>
