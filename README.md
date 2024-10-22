@@ -1,5 +1,10 @@
 # Enterprise Message API C# edition Posting to ATS example
 
+- Last update: Oct 2024
+- Environment: Windows and Linux OS
+- Compiler: C# or Docker
+- Prerequisite: The Real-Time Distribution System (RTDS) with the Real-time's Advanced Transformation System (ATS)
+
 ## Overview
 
 [Real-Time SDK (C# Edition)](https://developers.lseg.com/en/api-catalog/refinitiv-real-time-opnsrc/refinitiv-real-time-csharp-sdk) (RTSDK, formerly known as Elektron SDK) is a suite of modern and open source APIs ([GitHub](https://github.com/Refinitiv/Real-Time-SDK)) that aim to simplify development through a strong focus on ease of use and standardized access to LSEG Real-Time Platform via the proprietary TCP connection named RSSL and proprietary binary message encoding format named OMM Message. The capabilities range from low latency/high-performance APIs right through to simple streaming Web APIs.
@@ -24,8 +29,8 @@ Through posting, API consumers can easily push content into any cache within the
 This example covers only how to use the Off-Stream Post to contribute item to ATS server.
 
 ## Prerequisite 
-1. Real-Time Distribution System infrastructure
-2. ATS server with contribution enable configurations
+1. Real-Time Distribution System infrastructure.
+2. ATS server with contribution enable configurations.
 3. The Real-Time Advanced Distribution Server/Real-Time Advanced Data Hub server musts contain the ATS fields definition in the RDMFieldDictionary file.
 
 ```ini
@@ -48,7 +53,8 @@ X_ARGS     "X_ARGS"                -13 NULL        ALPHANUMERIC       20  RMTES_
 X_HOLIDAYS "X_HOLIDAYS"            -14 NULL        ALPHANUMERIC       255 RMTES_STRING    255
 X_PPE      "X_PPE"                 -15 NULL        ALPHANUMERIC       20  RMTES_STRING    20
 ```
-4. [.NET 8 SDK](https://dotnet.microsoft.com/en-us/download/dotnet/8.0)
+4. [.NET 8 SDK](https://dotnet.microsoft.com/en-us/download/dotnet/8.0).
+5. [Docker Desktop](https://www.docker.com/products/docker-desktop/) application if you need to run an application with Docker.
 
 Please contact your LSEG representative to help you with the RTDS and ATS configurations.
 
@@ -61,7 +67,7 @@ The first step is to unzip or download the example project folder into a directo
 1. Add the ATS fields definition on the *Prerequisite* section above to the RTDS's RDMFieldDictionary file (both ADS and ADH).
 2. Restart the ADS and ADH server.
 3. Enable the ATS server to accept contribution.
-4. Open the &lt;EMAConsumerATS&gt;EmaConfig.xml file with any text editor, and then set the ADS server hostname and port on the file to match your environment.
+4. Open the *&lt;EMAConsumerATS&gt;EmaConfig.xml* file with any text editor, and then set the ADS server hostname and port on the file to match your environment.
 
     ```xml
     <Channel>
@@ -86,6 +92,31 @@ The first step is to unzip or download the example project folder into a directo
 
     ```bash
     dotnet run -action create -service ATS1_7 -user wasin -item NEWITEM.RIC
+    ```
+
+7. To run the project with Docker, open the *&lt;Project folder&gt;docker-compose.yml* file with any text editor and set the command as follows to match your environment:
+
+    ```yml
+    name: ema_csharp_ats
+
+    services:
+    console-ats:
+        build:
+        context: ./EMAConsumerATS
+        dockerfile: Dockerfile
+        command: -action {create, addfields, removefields, delete, update} -service {ATS Service name} -user {DACS Username } -item {RIC name to interact with ATS}
+    ```
+
+8. Then run the following command:
+
+    ```bash
+    docker compose up
+    ```
+
+9. To stop a container, run the following command:
+
+    ```bash
+    docker compose down
     ```
     
 ### Example Result:
@@ -126,6 +157,20 @@ AckId: 1
 NackCode: <not set>
 Text: [1]: Contribution Accepted
 ```
+
+## <a id="troubleshooting"></a>Troubleshooting
+
+**Question 1**: I got *Service Denied* error message when sending the Post message to the ATS server.
+
+Example message:
+
+```bash
+Received AckMsg. Item Handle: 1 Closure: LSEG.Ema.Access.OmmConsumer
+NackCode: 132
+Text: [900]: Service Denied
+```
+
+**Answer**: Please add all ATS fields definition on the *Prerequisite* section above to the RTDS's RDMFieldDictionary file (both ADS and ADH). And then restart the ADS and ADH servers.
 
 ## <a id="references"></a>References
 

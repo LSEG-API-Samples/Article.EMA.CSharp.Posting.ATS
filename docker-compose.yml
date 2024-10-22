@@ -1,0 +1,8 @@
+name: ema_csharp_ats
+
+services:
+  console-ats:
+    build:
+      context: ./EMAConsumerATS
+      dockerfile: Dockerfile
+    command: -action update -service ATS -user USER -item RIC.N

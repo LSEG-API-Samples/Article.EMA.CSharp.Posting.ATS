@@ -43,6 +43,10 @@
         <!-- TcpNodelay is optional: defaulted to 1 												-->
         <!-- possible values: 1 (tcp_nodelay option set), 0 (tcp_nodelay not set)					-->
         <TcpNodelay value="1"/>
+        <!--If ADS Server and EMA App are in the same machine: Run manually-->
+        <!--<Host value="localhost"/>-->
+        <!--If ADS Server and EMA App are in the same machine: Run with Docker-->
+        <!--<Host value="host.docker.internal"/>-->
         <Host value="ADS_SERVER"/>
         <Port value="14002"/>
       </Channel>
