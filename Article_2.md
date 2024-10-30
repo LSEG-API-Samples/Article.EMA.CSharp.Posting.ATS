@@ -1,4 +1,4 @@
-# Implementing Real-Time API applications to work with ATS - Part 1 (with C# content only)
+# Implementing Real-Time API applications to work with ATS - Part 2 (with C# content only)
 
 ## Note
 
