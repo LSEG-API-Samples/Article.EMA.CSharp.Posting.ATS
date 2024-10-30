@@ -6,6 +6,7 @@ bin/
 obj/
 EMAConsumerATS/EmaConfig_work.xml
 EMAConsumerATS/Properties/
+EMAConsumerATS/Properties/launchSettings.json
 
 
 ### VS Code ###
