@@ -1,4 +1,4 @@
-# Implementing Real-Time API applications to work with ATS - Part 2 (with C# content only)
+# Implementing Real-Time API application to work with ATS - Part 2 (with C# content only)
 
 ## Note
 
@@ -302,3 +302,5 @@ For further details, please check out the following resources:
 - [EMA C# Reference Manual](https://developers.lseg.com/en/api-catalog/refinitiv-real-time-opnsrc/refinitiv-real-time-csharp-sdk/documentation#message-api-c-development-guides)
 - [WebSocket API Reference Manual](https://developers.lseg.com/en/api-catalog/refinitiv-real-time-opnsrc/refinitiv-websocket-api/documentation#web-socket-api-developer-guide)
 - [ATS documents](https://myaccount.lseg.com/en/product/real-time-advanced-transformation-server)
+
+For any question related to this article or the RTSDK page, please use the Developer Community [Q&A Forum](https://community.developers.refinitiv.com/).

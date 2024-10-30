@@ -1,4 +1,4 @@
-# Implementing Real-Time API applications to work with ATS - Part 1 (with C# content only)
+# Implementing Real-Time API application to work with ATS - Part 1 (with C# content only)
 
 ## Note
 
@@ -43,7 +43,7 @@ The Real-Time Advanced Transformation Server (ATS) is an analytical server that 
 
 ATS can also serve as an internal cache for sharing prices across the organization or feeding them into further calculations and logical rules. Prices can be easily sent to ATS with the RtContribute() function from Workspace Excel. ATS also accepts prices in post messages sent from the Real-Time APIs to ATS via Real-Time Distribution System (RTDS). More than 100,000 updates can be shared every second by using ATS as a central cache.
 
-ATS is the component that bridges the space between the Workspace and the Enterprise Platform. Business users can quickly create thousands of models that scale and produce real-time results to be shared across all client sites. ATS also provides highlight features e.g. Real-Time Calculations, Fault Tolerance with ATS Resiliency System. For more details, please refer to ATS documents.
+ATS is the component that bridges the space between the Workspace and the Enterprise Platform. Business users can quickly create thousands of models that scale and produce real-time results to be shared across all client sites. ATS also provides highlight features e.g. Real-Time Calculations, Fault Tolerance with ATS Resiliency System. For more details, please refer to [ATS documents](https://myaccount.lseg.com/en/product/real-time-advanced-transformation-server).
 
 ### Posting to ATS
 
@@ -62,10 +62,10 @@ The posting capability offers optional acknowledgments per posted message to ind
 
 ## Visible Publisher Identifier (VIP)
 
-The customer can also specify the originating data contributor which is called Visible Publisher Identifier (VPI) information with the Post message. You can use Visible Publisher Identifier data to identify the user ID and user address for users who post, insert or publish to the ATS server (or Refinitiv Real-Time infrastructure cache).  Visible Publisher Identifier (VPI) consists of:
+The customer can also specify the originating data contributor which is called *Visible Publisher Identifier (VPI)* information with the Post message. You can use Visible Publisher Identifier data to identify the user ID and user address for users who post, insert or publish to the ATS server (or the Real-Time Distribution System infrastructure cache).  Visible Publisher Identifier (VPI) consists of:
 
 - Post User Id (i.e., publisher ID): which should be an ID associated with the user. For example, a DACS user ID or if unavailable, a process id
-- Post User Address (i.e., publisher address): which normally contains the IP address of the application posting the content. The EMA Java and C++ APIs accept this value as a long value, so the customer must convert the IP address to a long value. 
+- Post User Address (i.e., publisher address): which normally contains the IP address of the application posting the content. The EMA Java, C# and C++ APIs accept this value as a long value, so the customer must convert the IP address to a long value. 
 
 Optionally, such information can be carried along with republished messages so that receiving consumers can identify the posting user. The application can set VIP information via the following RTSDK APIs methods:
 
@@ -205,7 +205,7 @@ public void OnRefreshMsg(RefreshMsg refreshMsg, IOmmConsumerEvent consumerEvent)
 
 ### Adding Fields
 
-You can use ATS command, **ATS_ADDFIELD_S**, to add fields by sending a post message from a consumer application as shown in step 3 in the figure above. Here's the sample of a post message that will add field id 12 and 13 with the value of 220 and 30 respectively to a RIC named *NEW.RIC*:
+You can use ATS command, **ATS_ADDFIELD_S**, to add fields by sending a post message from a consumer application as shown in step 3 in the figure above. Here's the sample of a post message that will add field id *12* and *13* with the value of *220* and *30* respectively to a RIC named *NEW.RIC*:
 
 ```xml
 <POST domainType="MARKET_PRICE" streamId="1" containerType="MSG" flags="0x66 (HAS_POST_ID|HAS_MSG_KEY|POST_COMPLETE|ACK)" postId="2" postUserId="18" postUserAddr="10.42.61.200" dataSize="34">
@@ -283,3 +283,17 @@ public void OnRefreshMsg(RefreshMsg refreshMsg, IOmmConsumerEvent consumerEvent)
 ```
 
 Please refer to my next article [Implementing Real-Time API application to work with ATS - Part 2](https://developers.lseg.com/en/article-catalog/article/implementing-elektron-api-applications-work-ats-part-2), for the Real-Time APIs application source code to update data, delete fields, and RICs. You can also find troubleshooting with the solutions for common problems that may occur when working with ATS.
+
+## References
+
+For further details, please check out the following resources:
+
+- [EMA Java Reference Manual](https://developers.lseg.com/en/api-catalog/refinitiv-real-time-opnsrc/rt-sdk-java/documentation#message-api-java-development-and-configuration-guides-with-examples)
+- [ETA Java Reference Manual](https://developers.lseg.com/en/api-catalog/refinitiv-real-time-opnsrc/rt-sdk-java/documentation#enterprise-transport-api-java-edition-developer-guides)
+- [EMA C++ Reference Manual](https://developers.lseg.com/en/api-catalog/refinitiv-real-time-opnsrc/rt-sdk-cc/documentation#enterprise-message-api-c-development-guides)
+- [ETA C Reference Manual](https://developers.lseg.com/en/api-catalog/refinitiv-real-time-opnsrc/rt-sdk-cc/documentation#enterprise-transport-api-c-edition-developer-guides)
+- [EMA C# Reference Manual](https://developers.lseg.com/en/api-catalog/refinitiv-real-time-opnsrc/refinitiv-real-time-csharp-sdk/documentation#message-api-c-development-guides)
+- [WebSocket API Reference Manual](https://developers.lseg.com/en/api-catalog/refinitiv-real-time-opnsrc/refinitiv-websocket-api/documentation#web-socket-api-developer-guide)
+- [ATS documents](https://myaccount.lseg.com/en/product/real-time-advanced-transformation-server)
+
+For any question related to this article or the RTSDK page, please use the Developer Community [Q&A Forum](https://community.developers.refinitiv.com/).
