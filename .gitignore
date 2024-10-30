@@ -5,6 +5,7 @@
 bin/
 obj/
 EMAConsumerATS/EmaConfig_work.xml
+EMAConsumerATS/Properties/
 
 
 ### VS Code ###
@@ -15,5 +16,5 @@ EMAConsumerATS/EmaConfig_work.xml
 
 note.txt
 ~$diagram.pptx
-Article_1.md
-Article_2.md
+#Article_1.md
+#Article_2.md

@@ -2,7 +2,7 @@
   "profiles": {
     "EMAConsumerATS": {
       "commandName": "Project",
-      "commandLineArgs": "-action delete -service ATS1_7 -user WASIN"
+      "commandLineArgs": "-action delete -service ATS1_7 -user WASIN -item NEW.RIC"
     }
   }
 }

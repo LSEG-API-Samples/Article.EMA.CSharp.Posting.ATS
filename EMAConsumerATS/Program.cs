@@ -276,8 +276,8 @@ internal class AppClient : IOmmConsumerClient
         {
             Console.WriteLine("Create ATS New RIC");
             PostMsg postMsg = new();
-            RefreshMsg nestedRefreshMsg = new RefreshMsg();
-            FieldList nestedFieldList = new FieldList();
+            RefreshMsg nestedRefreshMsg = new();
+            FieldList nestedFieldList = new();
 
             //FieldList is a collection
             nestedFieldList.AddAscii(-1, PostItemName);
@@ -310,8 +310,8 @@ internal class AppClient : IOmmConsumerClient
         {
             Console.WriteLine("Update ATS RIC");
             PostMsg postMsg = new();
-            UpdateMsg nestedUpdateMsg = new UpdateMsg();
-            FieldList nestedFieldList = new FieldList();
+            UpdateMsg nestedUpdateMsg = new();
+            FieldList nestedFieldList = new();
 
             //FieldList is a collection
             nestedFieldList.AddReal(22, 43, OmmReal.MagnitudeTypes.EXPONENT_POS_1);
@@ -340,8 +340,8 @@ internal class AppClient : IOmmConsumerClient
         {
             Console.WriteLine("Add ATS Fields");
             PostMsg postMsg = new();
-            UpdateMsg nestedUpdateMsg = new UpdateMsg();
-            FieldList nestedFieldList = new FieldList();
+            UpdateMsg nestedUpdateMsg = new();
+            FieldList nestedFieldList = new();
 
             //FieldList is a collection
             nestedFieldList.AddAscii(-1, PostItemName);
@@ -370,8 +370,8 @@ internal class AppClient : IOmmConsumerClient
         {
             Console.WriteLine("Delete ATS Fields");
             PostMsg postMsg = new();
-            UpdateMsg nestedUpdateMsg = new UpdateMsg();
-            FieldList nestedFieldList = new FieldList();
+            UpdateMsg nestedUpdateMsg = new();
+            FieldList nestedFieldList = new();
 
             //FieldList is a collection
             nestedFieldList.AddAscii(-1, PostItemName);
@@ -400,8 +400,8 @@ internal class AppClient : IOmmConsumerClient
         {
             Console.WriteLine("Delete ATS RIC");
             PostMsg postMsg = new();
-            UpdateMsg nestedUpdateMsg = new UpdateMsg();
-            FieldList nestedFieldList = new FieldList();
+            UpdateMsg nestedUpdateMsg = new();
+            FieldList nestedFieldList = new();
 
             //FieldList is a collection
             nestedFieldList.AddAscii(-1, PostItemName);
