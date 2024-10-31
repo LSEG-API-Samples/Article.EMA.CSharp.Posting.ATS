@@ -75,7 +75,7 @@ EMA C# API:
 PostMsg.PublisherId(long userId, long userAddress)
 ```
 
-## Prerequisites to Posting messages to ATS via Real-Time Distribution System
+## Prerequisites to Posting messages to ATS via the Real-Time Distribution System
 
 1. ATS and Real-Time Distribution System (Real-Time Advanced Distribution and Real-Time Advanced Data Hub servers) must be ready to use. The Real-Time Distribution System can work with ATS properly. RSSL connection on Real-Time Advanced Distribution Server,/Real-Time Advanced Data Hub server must be enabled for consumer applications. To set up Real-Time Advanced Distribution Server, Real-Time Advanced Data Hub, and ATS, please contact your LSEG Account team (if the infrastructure is owned by LSEG) or your infrastructure administrator team (if the infrastructure is owned by your company).
 

@@ -43,7 +43,7 @@ Notice that:
 - The post message's domain type is **Market Price**. The streamId is *1* means the post message is sent via the login stream, **off-stream posting**. The message contains the **postId** and the flag **ACK**(to need an ack message) is set. It also contains **Visible Publisher Identifier(VPI)**. VPI consists of **postUserId** and **postUserAddr**.
 - The key **name** of the post message must be the RIC name whose data is going to be updated.The key name of the post message must be the RIC name whose data is going to be updated.
 - The payload of the post message is an Update of **Market Price** message. The payload of the Update message is a field list.  
-- The field list are the updated fields i.e. field id 12(HIGH_1) and field id 13(LOW_1) with their updated values on this RIC.
+- The field list are the updated fields i.e. field id *22(BID)* and field id *25(ASK)* with their updated values on this RIC.
 - Data values in the fields list are encoded OMM.
 
 An example of success Ack message:
